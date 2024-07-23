@@ -55,52 +55,55 @@ FOR(int x; x <= 0; x++)
 '''
 
 
+reserved = {
+    'var' : 'VAR',
+    'const' : 'CONST',
+    'int' : 'INT',
+    'float' : 'FLOAT',
+    'char' : 'CHAR',
+    'string' : 'STRING',
+    'true' : 'TRUE',
+    'false' : 'FALSE',
+    'if': 'IF',
+    'while' : 'WHILE',
+    'do' : 'DO',
+    'for' : 'FOR',
+    'print' : 'PRINT'
+}
 
 tokens = (
-    #Palabras reservadas
-    'VAR'
-    'CONST'
-    'INT'
-    'FLOAT'
-    'CHAR'
-    'STRING'
     #Operadores aritmeticos
-    'SUM'
-    'MINUS'
-    'DIV'
-    'MULT'
+    'SUM',
+    'MINUS',
+    'DIV',
+    'MULT',
     #Operadores logicos
-    'LESS'
-    'LESSEQ'
-    'EQ'
-    'MORE'
-    'MOREEQ'
-    'OR'
-    'AND'
-    #Booleanos
-    'TRUE'
-    'FALSE'
+    'LESS',
+    'LESSEQ',
+    'EQ',
+    'MORE',
+    'MOREEQ',
+    'OR',
+    'AND',
     #Simbolos
-    'PARIZQ'
-    'PARDER'
-    'CORIZQ'
-    'CORDER'
-    'SEMICOL'
-    #Operadores
-    'IF'
-    'WHILE'
-    'DO'
-    'FOR'
+    'PARIZQ',
+    'PARDER',
+    'CORIZQ',
+    'CORDER',
+    'SEMICOL',
+    'DCOMILLA'
     #Asignar
-    'ASIGN'
-)
+    'ASIGN',
+    #ID y tipos
+    'ID',
+    'NUM',
+    'FLOATNUM',
+    'STRINGTYPE'
+    #Coment
+    'COMMENT'
+) + list(reserved.values())
 
-t_VAR = r'\bvar\b'
-t_CONST = r'\bconst\b'
-t_INT = r'\bint\b'
-t_FLOAT = r'\bfloat\b'
-t_CHAR = r'\bchar\b'
-t_STRING = r'\bstring\b'
+
 t_SUM = r'\+'
 t_MINUS = r'\-'
 t_DIV = r'/'
@@ -110,7 +113,7 @@ t_LESSEQ = r'<='
 t_EQ = r'=='
 t_MORE = r'>'
 t_MOREEQ = r'>='
-t_OR = r'\|\|'
+t_OR = r'\|{2}'
 t_AND = r'\&\&'
 t_PARIZQ = r'\('
 t_PARDER = r'\)'
@@ -118,20 +121,27 @@ t_CORIZQ = r'\{'
 t_CORDER = r'\}'
 t_SEMICOL = r';'
 t_ASIGN = r'='
+t_DOBLECOMILLA = r'"'
+t_ignore_COMMENT = r'#'
+digit = 
 
+def t_ignore(t):
+    r'\s'
 
-def t_VAR(t):
-    r'\bvar'
-    return t;
+def t_newline(t):
+    r'\n'
+    t.lexer.lineno += len(t.value)
+    
+"""
+Column Tracking for error handling
+Input is the input string;
+toke is a token instance 
+def find_column(input, token):
+    line_start = input.rfind('\#n', 0, token.lexpos) + 1
+    return (token.lexpos - line_start) + 1
+"""
 
-def t_CONST(t):
-    r'const'
-    return t
-
-def t_INT(t):
-    r''
-    t.value = int(t.value)
-    return t;
-
-def t_FLOAT(t):
+def t_error(t):
+    print("Illegal character or expresion %s in line %d, token no. %d" % t.value, t.lineno, t.lexpos)
+    t.lexer.skip(1)
     
